@@ -1,57 +1,54 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
+#include <stdlib.h>
 #include <ctype.h>
+#include <stdbool.h>
 
+// Função auxiliar para verificar se a substring é agradável
+bool eh_agradavel(char *s, int inicio, int fim) {
+    bool maiusculas[26] = {false};
+    bool minusculas[26] = {false};
 
-bool eh_agradavel(const char *s, int inicio, int fim) {
-bool minusculas[26] = {false};
-bool maiusculas[26] = {false};
+    for (int i = inicio; i <= fim; i++) {
+        char c = s[i];
+        if (isupper(c))
+            maiusculas[c - 'A'] = true;
+        else if (islower(c))
+            minusculas[c - 'a'] = true;
+    }
 
-for (int i = inicio; i <= fim; i++) {
-if (islower(s[i]))
-minusculas[s[i] - 'a'] = true;
-else if (isupper(s[i]))
-maiusculas[s[i] - 'A'] = true;
+    for (int i = 0; i < 26; i++) {
+        if (maiusculas[i] != minusculas[i])
+            return false;
+    }
+
+    return true;
 }
 
-for (int i = 0; i < 26; i++) {
-if (minusculas[i] != maiusculas[i])
-return false;
+// Função principal que encontra a maior substring agradável
+char* longestNiceSubstring(char* s) {
+    int n = strlen(s);
+    int max_len = 0;
+    int melhor_inicio = -1;
+
+    for (int i = 0; i < n; i++) {
+        for (int j = i; j < n; j++) {
+            if (eh_agradavel(s, i, j)) {
+                int tamanho = j - i + 1;
+                if (tamanho > max_len) {
+                    max_len = tamanho;
+                    melhor_inicio = i;
+                }
+            }
+        }
+    }
+
+    if (melhor_inicio == -1)
+        return strdup("");
+
+    char* resultado = malloc((max_len + 1) * sizeof(char));
+    strncpy(resultado, s + melhor_inicio, max_len);
+    resultado[max_len] = '\0';
+    return resultado;
 }
 
-return true;
-}
 
-void maior_substring_agradavel(const char *s, char *resultado) {
-int n = strlen(s);
-int max_len = 0;
-int inicio_resultado = 0;
-
-for (int i = 0; i < n; i++) {
-for (int j = i; j < n; j++) {
-if (eh_agradavel(s, i, j) && (j - i + 1) > max_len) {
-max_len = j - i + 1;
-inicio_resultado = i;
-}
-}
-}
-
-if (max_len > 0) {
-strncpy(resultado, s + inicio_resultado, max_len);
-resultado[max_len] = '\0';
-} else {
-resultado[0] = '\0';
-}
-}
-
-int main() {
-const char *entrada = "YazaAay";
-char resultado[100];
-
-maior_substring_agradavel(entrada, resultado);
-printf("Maior substring agradável: \"%s\"\n", resultado);
-
-return 0;
-}
