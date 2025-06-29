@@ -1,0 +1,43 @@
+char* longestDiverseString(int a, int b, int c) {
+    typedef struct {
+        char ch;
+        int count;
+    } Bloco;
+
+    Bloco dados[3] = { {'a', a}, {'b', b}, {'c', c} };
+    char* resultado = malloc(1000);
+    int pos = 0;
+
+    while (1) {
+       
+        for (int i = 0; i < 2; i++) {
+            for (int j = i + 1; j < 3; j++) {
+                if (dados[j].count > dados[i].count) {
+                    Bloco tmp = dados[i];
+                    dados[i] = dados[j];
+                    dados[j] = tmp;
+                }
+            }
+        }
+
+        int inserido = 0;
+
+        for (int i = 0; i < 3; i++) {
+            if (dados[i].count == 0) continue;
+
+            if (pos >= 2 && resultado[pos - 1] == dados[i].ch && resultado[pos - 2] == dados[i].ch)
+                continue;
+
+            resultado[pos++] = dados[i].ch;
+            dados[i].count--;
+            inserido = 1;
+            break;
+        }
+
+        if (!inserido)
+            break;
+    }
+
+    resultado[pos] = '\0';
+    return resultado;
+}
